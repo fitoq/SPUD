@@ -1,0 +1,21 @@
+{
+    "name": "POS System",
+    "short_name": "POS",
+    "description": "Point of Sale System for iPad",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#667eea",
+    "background_color": "#ffffff",
+    "icons": [
+        {
+            "src": "https://via.placeholder.com/192x192/667eea/white?text=POS",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://via.placeholder.com/512x512/667eea/white?text=POS",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
