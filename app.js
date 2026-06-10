@@ -337,13 +337,32 @@ function showAddOnModal(productId) {
         const totalRemaining = getRemainingStock(productId);
         const inCart = getCartQuantityForProduct(productId);
         if (totalRemaining <= 0) {
-            alert(`❌ ${product.name} is out of stock for today!`);
+            alert(`❌ ${product.name} habeh doh boh!`);
         } else {
             alert(`⚠️ You already have ${inCart} ${product.name}(s) in cart.\nOnly ${totalRemaining} available today.`);
         }
         return;
     }
     
+    currentAddOnProduct = products.find(p => p.id === productId);
+    
+    // Format the product name with available stock
+    const productNameElement = document.getElementById('addOnProductName');
+    if (productNameElement) {
+        productNameElement.innerHTML = `${currentAddOnProduct.icon} ${currentAddOnProduct.name} - RM${currentAddOnProduct.price.toFixed(2)} <span style="font-size: 14px; font-weight: 400; color: #28a745; margin-left: 8px;">(Available: ${remaining})</span>`;
+    }
+    
+    // Reset checkboxes
+    const extraCheese = document.getElementById('extraCheese');
+    const extraMeat = document.getElementById('extraMeat');
+    if (extraCheese) extraCheese.checked = false;
+    if (extraMeat) extraMeat.checked = false;
+    
+    // Show modal
+    const modal = document.getElementById('addOnModal');
+    if (modal) modal.style.display = 'block';
+}
+ {   
     currentAddOnProduct = products.find(p => p.id === productId);
     document.getElementById('addOnProductName').innerHTML = `${currentAddOnProduct.icon} ${currentAddOnProduct.name} - RM${currentAddOnProduct.price.toFixed(2)}<br><span style="font-size: 12px; color: #666;">Available: ${remaining}</span>`;
     document.getElementById('extraCheese').checked = false;

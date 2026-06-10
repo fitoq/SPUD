@@ -114,28 +114,35 @@
         </div>
     </div>
 
-    <!-- Add-On Modal -->
-    <div id="addOnModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAddOnModal()">&times;</span>
-            <h2>➕ Add-Ons</h2>
-            <div class="modal-body">
-                <p><strong id="addOnProductName"></strong></p>
-                <div class="addon-options">
-                    <label class="addon-checkbox">
-                        <input type="checkbox" id="extraCheese"> 🧀 Extra Cheese (+RM2.00)
-                    </label>
-                    <label class="addon-checkbox">
-                        <input type="checkbox" id="extraMeat"> 🥩 Extra Meat (+RM2.00)
-                    </label>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button class="action-btn" onclick="confirmAddToCart()">Add to Cart</button>
-                    <button class="action-btn secondary" onclick="closeAddOnModal()">Cancel</button>
-                </div>
+<!-- Add-On Modal -->
+<div id="addOnModal" class="modal">
+    <div class="modal-content">
+        <div style="padding: 24px 24px 0 24px;">
+            <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #1a1a2e;">➕ Add-Ons</h2>
+        </div>
+        <div style="padding: 20px 24px 24px 24px;">
+            <div style="font-size: 18px; font-weight: 600; color: #1e293b; padding-bottom: 12px; border-bottom: 2px solid #f0f2f5; margin-bottom: 16px;">
+                <span id="addOnProductName"></span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin: 20px 0;">
+                <label style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #f8fafc; border-radius: 16px; cursor: pointer; border: 1px solid #eef2f6;">
+                    <input type="checkbox" id="extraCheese" style="width: 22px; height: 22px; cursor: pointer; accent-color: #DAA520;">
+                    <span style="flex: 1; font-size: 16px; font-weight: 500;">🧀 Extra Cheese</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #DAA520;">+RM2.00</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #f8fafc; border-radius: 16px; cursor: pointer; border: 1px solid #eef2f6;">
+                    <input type="checkbox" id="extraMeat" style="width: 22px; height: 22px; cursor: pointer; accent-color: #DAA520;">
+                    <span style="flex: 1; font-size: 16px; font-weight: 500;">🥩 Extra Meat</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #DAA520;">+RM2.00</span>
+                </label>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 24px;">
+                <button class="action-btn" onclick="confirmAddToCart()" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 16px;">Add to Cart</button>
+                <button class="action-btn secondary" onclick="closeAddOnModal()" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 16px; background: #f1f3f5; color: #475569;">Cancel</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Add Stock Modal -->
     <div id="addStockModal" class="modal">

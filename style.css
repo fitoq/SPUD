@@ -698,3 +698,119 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
+
+/* Add-On Modal - iPad Optimized */
+#addOnModal .modal-content {
+    max-width: 500px;
+    width: 90%;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 28px;
+}
+
+#addOnModal .modal-content h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    padding: 24px 24px 0 24px;
+    color: #1a1a2e;
+}
+
+#addOnModal .modal-body {
+    padding: 20px 24px 24px 24px;
+    margin: 0;
+}
+
+#addOnProductName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    display: block;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f2f5;
+    margin-bottom: 16px;
+}
+
+#addOnProductName span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #28a745;
+    margin-left: 8px;
+}
+
+.addon-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.addon-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #eef2f6;
+}
+
+.addon-checkbox:hover {
+    background: #f1f5f9;
+    border-color: #DAA520;
+}
+
+.addon-checkbox input {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: #DAA520;
+    margin: 0;
+}
+
+.addon-checkbox span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.addon-checkbox .addon-price {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: #DAA520;
+}
+
+#addOnModal .action-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 16px;
+    margin-bottom: 10px;
+}
+
+#addOnModal .action-btn.secondary {
+    background: #f1f3f5;
+    color: #475569;
+    margin-bottom: 0;
+}
+
+#addOnModal .action-btn.secondary:hover {
+    background: #e9ecef;
+}
+
+#addOnModal .action-btn:hover {
+    opacity: 0.92;
+    transform: scale(1.01);
+}
+
+/* Button container for add-on modal */
+.addon-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
