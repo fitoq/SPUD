@@ -1,34 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- CRITICAL: These MUST be exactly as shown -->
+    <!-- App Icons for iPad Home Screen -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="My POS">
+    <meta name="apple-mobile-web-app-title" content="SPUD POTATO">
     
-    <!-- App Icons for iPad Home Screen -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white'%3E🛒%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white'%3E🛒%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="167x167" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white'%3E🛒%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white'%3E🛒%3C/text%3E%3C/svg%3E">
-    
-    <!-- CRITICAL: start_url must be / -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23DAA520'/%3E%3Ctext x='50' y='68' font-size='50' text-anchor='middle' fill='white'%3E🥔%3C/text%3E%3C/svg%3E">
     <link rel="manifest" href="manifest.json">
     
-    <title>SPUD POTATO</title>
+    <title>SPUD POTATO POS</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header with Hamburger Menu -->
+        <!-- Header -->
         <div class="header">
             <button class="menu-btn" onclick="toggleMenu()">☰</button>
-            <h1>🛒 SPUD POTATO</h1>
+            <h1>🥔 SPUD POTATO</h1>
             <div class="date" id="currentDate"></div>
         </div>
 
-        <!-- Sidebar Menu (Wider) -->
+        <!-- Sidebar Menu -->
         <div id="sidebarMenu" class="sidebar">
             <div class="sidebar-content">
                 <div class="sidebar-header">
@@ -36,7 +32,7 @@
                     <button class="close-btn" onclick="toggleMenu()">×</button>
                 </div>
                 
-                <!-- Individual Stock Limits for Each Product -->
+                <!-- Daily Stock Limits with Checkboxes and Add Stock Button -->
                 <div class="sidebar-section">
                     <h3>📦 Daily Stock Limits Per Menu</h3>
                     <div id="stockLimitsContainer"></div>
@@ -46,33 +42,26 @@
                     </div>
                 </div>
                 
-                <!-- Backup & Archive Section -->
+                <!-- Backup & Archive -->
                 <div class="sidebar-section">
                     <h3>💾 Backup & Archive</h3>
-                    <button class="action-btn secondary" onclick="exportAllSales()" style="margin-bottom: 10px;">📥 Export All Sales to Excel</button>
+                    <button class="action-btn secondary" onclick="exportAllSales()" style="margin-bottom: 10px;">📥 Export All Sales</button>
                     <button class="action-btn secondary" onclick="exportDailyStockReport(new Date().toISOString().split('T')[0])" style="margin-bottom: 10px;">📊 Export Stock Report</button>
-                    <button class="action-btn secondary" onclick="exportSalesHistoryByDateRange()">📅 Export by Date Range</button>
                 </div>
                 
-                <!-- Export Section -->
+                <!-- Export by Date -->
                 <div class="sidebar-section">
                     <h3>📊 Export by Date</h3>
                     <label>Select date:</label>
                     <input type="date" id="exportDate">
-                    <button class="action-btn" onclick="exportByDate()">📊 Export to Excel (CSV)</button>
-                </div>
-                
-                <!-- Receipt Settings -->
-                <div class="sidebar-section">
-                    <h3>🖨️ Receipt Settings</h3>
-                    <button class="action-btn secondary" onclick="testPrint()">Test Printer</button>
+                    <button class="action-btn" onclick="exportByDate()">📊 Export to Excel</button>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Product Grid - 5 Big Partitions -->
+            <!-- Product Grid -->
             <div class="products-section">
                 <div class="product-grid" id="productGrid"></div>
             </div>
@@ -84,7 +73,7 @@
                     <button class="clear-cart-btn" onclick="clearCart()">Clear All</button>
                 </div>
                 <div class="cart-items" id="cartItems">
-                    <div class="empty-cart">List is empty</div>
+                    <div class="empty-cart">Cart is empty</div>
                 </div>
                 <div class="cart-summary">
                     <div class="summary-row total">
@@ -100,7 +89,7 @@
         </div>
     </div>
 
-    <!-- Customer & Payment Method Modal -->
+    <!-- Customer Modal -->
     <div id="customerModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCustomerModal()">&times;</span>
@@ -108,19 +97,56 @@
             <div class="modal-body">
                 <p>Total Amount: <strong id="customerModalTotal">RM0.00</strong></p>
                 <label>Customer Name:</label>
-                <input type="text" id="customerName" placeholder="Enter customer name" autocomplete="off">
+                <input type="text" id="customerName" placeholder="Enter customer name">
                 <label style="margin-top: 15px;">Payment Method:</label>
                 <div class="payment-method-buttons">
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('cash')">
-                        💵 Cash
-                    </button>
-                    <button class="payment-method-btn" onclick="selectPaymentMethod('qr')">
-                        📱 QR Code
-                    </button>
+                    <button class="payment-method-btn" onclick="selectPaymentMethod('cash')">💵 Cash</button>
+                    <button class="payment-method-btn" onclick="selectPaymentMethod('qr')">📱 QR Code</button>
                 </div>
                 <div id="selectedMethodDisplay" style="margin-top: 10px; font-size: 14px; color: #666;"></div>
                 <div style="margin-top: 20px;">
                     <button class="action-btn" id="continuePaymentBtn" onclick="proceedToPayment()" style="display: none;">Continue to Payment →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add-On Modal -->
+    <div id="addOnModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddOnModal()">&times;</span>
+            <h2>➕ Add-Ons</h2>
+            <div class="modal-body">
+                <p><strong id="addOnProductName"></strong></p>
+                <div class="addon-options">
+                    <label class="addon-checkbox">
+                        <input type="checkbox" id="extraCheese"> 🧀 Extra Cheese (+RM2.00)
+                    </label>
+                    <label class="addon-checkbox">
+                        <input type="checkbox" id="extraMeat"> 🥩 Extra Meat (+RM2.00)
+                    </label>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="action-btn" onclick="confirmAddToCart()">Add to Cart</button>
+                    <button class="action-btn secondary" onclick="closeAddOnModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Stock Modal -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content small">
+            <span class="close" onclick="closeAddStockModal()">&times;</span>
+            <h2>➕ Add More Stock</h2>
+            <div class="modal-body">
+                <p><strong id="addStockProductName"></strong></p>
+                <label>Current limit: <strong id="currentLimit"></strong></label>
+                <label style="margin-top: 15px;">Amount to add:</label>
+                <input type="number" id="addStockAmount" placeholder="Enter amount" min="1" step="1">
+                <div style="margin-top: 20px;">
+                    <button class="action-btn" onclick="confirmAddStock()">Add Stock</button>
+                    <button class="action-btn secondary" onclick="closeAddStockModal()">Cancel</button>
                 </div>
             </div>
         </div>
@@ -147,10 +173,10 @@
         <div class="modal-content small">
             <h2>🖨️ Print Receipt?</h2>
             <div class="modal-body">
-                <p>Do you want to print a receipt for <strong><span id="receiptCustomerName"></span></strong>?</p>
+                <p>Print receipt for <strong><span id="receiptCustomerName"></span></strong>?</p>
                 <div class="receipt-options">
-                    <button class="action-btn" onclick="printReceiptAndClose()">✅ Yes, Print Receipt</button>
-                    <button class="action-btn secondary" onclick="completeWithoutReceipt()">❌ No, Skip Receipt</button>
+                    <button class="action-btn" onclick="printReceiptAndClose()">✅ Yes</button>
+                    <button class="action-btn secondary" onclick="completeWithoutReceipt()">❌ No</button>
                 </div>
             </div>
         </div>
@@ -162,7 +188,7 @@
             <div class="modal-header">
                 <h2>📜 Sales History</h2>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="reset-history-btn" onclick="resetSalesHistory()">🗑️ Clear All History</button>
+                    <button class="reset-history-btn" onclick="resetSalesHistory()">🗑️ Clear All</button>
                     <span class="close" onclick="closeHistoryModal()">&times;</span>
                 </div>
             </div>
