@@ -63,7 +63,7 @@ function toggleMenu() {
     if (sidebar) sidebar.classList.toggle('open');
 }
 
-// ============= STOCK LIMITS UI WITH CHECKBOX THAT DISABLES ADD STOCK =============
+// ============= STOCK LIMITS UI =============
 function renderStockLimitsUI() {
     const container = document.getElementById('stockLimitsContainer');
     if (!container) return;
@@ -112,7 +112,6 @@ function toggleAvailability(productId) {
         limitInput.disabled = !checkbox.checked;
     }
     
-    // Disable Add Stock button when unchecked
     if (addStockBtn) {
         addStockBtn.disabled = !checkbox.checked;
     }
@@ -141,7 +140,6 @@ function saveAllStockLimits() {
 let currentStockProductId = null;
 
 function showAddStockModal(productId) {
-    // Check if product is available before allowing add stock
     if (!stockLimits[productId].available) {
         alert('This item is currently unavailable. Please check the box first to enable stock addition.');
         return;
@@ -236,24 +234,46 @@ function getRemainingStock(productId) {
     return stock.limit - stock.sold;
 }
 
+// ============= IMPROVED STOCK CHECK FUNCTION =============
 function checkStockAvailability(productId, requestedQuantity) {
     const remaining = getRemainingStock(productId);
     const product = products.find(p => p.id === productId);
+    const currentCartQuantity = getCartQuantityForProduct(productId);
+    
+    // Total that would be in cart after adding
+    const totalAfterAdd = currentCartQuantity + requestedQuantity;
     
     if (!stockLimits[productId].available) {
         alert(`❌ ${product.name} is not available today!`);
         return false;
     }
     
-    if (remaining < requestedQuantity) {
+    if (totalAfterAdd > remaining) {
+        const availableToAdd = remaining - currentCartQuantity;
         if (remaining <= 0) {
             alert(`❌ ${product.name} is out of stock for today!`);
+        } else if (currentCartQuantity >= remaining) {
+            alert(`⚠️ You already have ${currentCartQuantity} ${product.name}(s) in cart.\nOnly ${remaining} available today.`);
         } else {
-            alert(`⚠️ Only ${remaining} ${product.name}(s) remaining!`);
+            alert(`⚠️ Only ${availableToAdd} more ${product.name}(s) available.\nYou already have ${currentCartQuantity} in cart.\nMax total: ${remaining}`);
         }
         return false;
     }
     return true;
+}
+
+// Get total quantity of a product in cart (considering add-ons as separate items)
+function getCartQuantityForProduct(productId) {
+    return cart
+        .filter(item => item.id === productId)
+        .reduce((sum, item) => sum + item.quantity, 0);
+}
+
+// Get remaining available for a specific product (accounting for current cart)
+function getRemainingForProduct(productId) {
+    const totalRemaining = getRemainingStock(productId);
+    const inCart = getCartQuantityForProduct(productId);
+    return totalRemaining - inCart;
 }
 
 function updateSoldCount(productId, quantity) {
@@ -310,8 +330,22 @@ function displayProducts() {
 let currentAddOnProduct = null;
 
 function showAddOnModal(productId) {
+    // Check stock before showing modal
+    const remaining = getRemainingForProduct(productId);
+    if (remaining <= 0) {
+        const product = products.find(p => p.id === productId);
+        const totalRemaining = getRemainingStock(productId);
+        const inCart = getCartQuantityForProduct(productId);
+        if (totalRemaining <= 0) {
+            alert(`❌ ${product.name} is out of stock for today!`);
+        } else {
+            alert(`⚠️ You already have ${inCart} ${product.name}(s) in cart.\nOnly ${totalRemaining} available today.`);
+        }
+        return;
+    }
+    
     currentAddOnProduct = products.find(p => p.id === productId);
-    document.getElementById('addOnProductName').textContent = `${currentAddOnProduct.icon} ${currentAddOnProduct.name} - RM${currentAddOnProduct.price.toFixed(2)}`;
+    document.getElementById('addOnProductName').innerHTML = `${currentAddOnProduct.icon} ${currentAddOnProduct.name} - RM${currentAddOnProduct.price.toFixed(2)}<br><span style="font-size: 12px; color: #666;">Available: ${remaining}</span>`;
     document.getElementById('extraCheese').checked = false;
     document.getElementById('extraMeat').checked = false;
     document.getElementById('addOnModal').style.display = 'block';
@@ -325,10 +359,21 @@ function closeAddOnModal() {
 function confirmAddToCart() {
     if (!currentAddOnProduct) return;
     
+    // Double check stock before adding
+    const remaining = getRemainingForProduct(currentAddOnProduct.id);
+    if (remaining <= 0) {
+        const totalRemaining = getRemainingStock(currentAddOnProduct.id);
+        const inCart = getCartQuantityForProduct(currentAddOnProduct.id);
+        alert(`⚠️ Cannot add more.\nYou already have ${inCart} in cart.\nOnly ${totalRemaining} available today.`);
+        closeAddOnModal();
+        return;
+    }
+    
     const extraCheese = document.getElementById('extraCheese').checked;
     const extraMeat = document.getElementById('extraMeat').checked;
     
-    const existingItem = cart.find(item => 
+    // Check if same add-on combination already exists in cart
+    const existingItemIndex = cart.findIndex(item => 
         item.id === currentAddOnProduct.id && 
         item.extraCheese === extraCheese && 
         item.extraMeat === extraMeat
@@ -347,31 +392,29 @@ function confirmAddToCart() {
     
     const totalPrice = currentAddOnProduct.price + addOnCost;
     
-    if (existingItem) {
-        if (checkStockAvailability(currentAddOnProduct.id, 1)) {
-            existingItem.quantity++;
-        } else {
+    if (existingItemIndex !== -1) {
+        // Check if we can add one more to existing item
+        const newQuantity = cart[existingItemIndex].quantity + 1;
+        const remainingAfterAdd = getRemainingForProduct(currentAddOnProduct.id);
+        if (newQuantity > (getRemainingStock(currentAddOnProduct.id) - (getCartQuantityForProduct(currentAddOnProduct.id) - cart[existingItemIndex].quantity))) {
+            alert(`⚠️ Cannot add more. Only ${remainingAfterAdd} remaining for ${currentAddOnProduct.name}.`);
             closeAddOnModal();
             return;
         }
+        cart[existingItemIndex].quantity++;
     } else {
-        if (checkStockAvailability(currentAddOnProduct.id, 1)) {
-            cart.push({
-                id: currentAddOnProduct.id,
-                name: currentAddOnProduct.name,
-                basePrice: currentAddOnProduct.price,
-                price: totalPrice,
-                quantity: 1,
-                icon: currentAddOnProduct.icon,
-                extraCheese: extraCheese,
-                extraMeat: extraMeat,
-                addOns: addOnNames,
-                addOnCost: addOnCost
-            });
-        } else {
-            closeAddOnModal();
-            return;
-        }
+        cart.push({
+            id: currentAddOnProduct.id,
+            name: currentAddOnProduct.name,
+            basePrice: currentAddOnProduct.price,
+            price: totalPrice,
+            quantity: 1,
+            icon: currentAddOnProduct.icon,
+            extraCheese: extraCheese,
+            extraMeat: extraMeat,
+            addOns: addOnNames,
+            addOnCost: addOnCost
+        });
     }
     
     updateCartDisplay();
@@ -389,6 +432,10 @@ function updateCartDisplay() {
     }
     
     cartContainer.innerHTML = cart.map((item, index) => {
+        const remainingForThisItem = getRemainingForProduct(item.id);
+        const currentInCart = getCartQuantityForProduct(item.id);
+        const canAddMore = remainingForThisItem > 0;
+        
         const addOnsText = item.addOns.length > 0 ? ` + ${item.addOns.join(' + ')}` : '';
         const addOnsDisplay = item.addOns.length > 0 ? `<div class="cart-item-addons">➕ ${item.addOns.join(' + ')} (+RM${item.addOnCost.toFixed(2)})</div>` : '';
         
@@ -402,7 +449,7 @@ function updateCartDisplay() {
                 <div class="cart-item-controls">
                     <button onclick="updateQuantity(${index}, -1)">-</button>
                     <span class="cart-item-quantity">${item.quantity}</span>
-                    <button onclick="updateQuantity(${index}, 1)">+</button>
+                    <button onclick="updateQuantity(${index}, 1)" ${!canAddMore ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>+</button>
                     <span class="cart-item-total">RM${(item.price * item.quantity).toFixed(2)}</span>
                     <button class="remove-item" onclick="removeFromCart(${index})">✕</button>
                 </div>
@@ -414,9 +461,16 @@ function updateCartDisplay() {
 }
 
 function updateQuantity(index, change) {
+    const item = cart[index];
+    
     if (change > 0) {
-        const item = cart[index];
-        if (!checkStockAvailability(item.id, 1)) return;
+        // Check if we can add more
+        const remainingForThisItem = getRemainingForProduct(item.id);
+        if (remainingForThisItem <= 0) {
+            const totalRemaining = getRemainingStock(item.id);
+            alert(`⚠️ Cannot add more ${item.name}.\nOnly ${totalRemaining} available today.`);
+            return;
+        }
         cart[index].quantity++;
     } else {
         cart[index].quantity--;
@@ -591,7 +645,7 @@ function closeModal() {
     document.getElementById('paymentModal').style.display = 'none';
 }
 
-// ============= RECEIPT PRINTING (SPUD POTATO) =============
+// ============= RECEIPT PRINTING =============
 function printReceipt(sale) {
     const receiptWindow = window.open('', '_blank');
     receiptWindow.document.write(`
