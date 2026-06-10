@@ -1,10 +1,10 @@
 // ============= PRODUCT DATABASE (5 MENU ITEMS) =============
 const products = [
-    { id: 1, name: "Chili Mexican", price: 5.99, icon: "🌶️" },
-    { id: 2, name: "Bolognese", price: 7.99, icon: "🍝" },
-    { id: 3, name: "Carbonara", price: 2.99, icon: "🍝" },
-    { id: 4, name: "Chezzy Mac", price: 1.99, icon: "🧀" },
-    { id: 5, name: "Baked Beans", price: 2.99, icon: "🥫" }
+    { id: 1, name: "Chili Mexican", price: 15, icon: "🌶️" },
+    { id: 2, name: "Bolognese", price: 16, icon: "🍝" },
+    { id: 3, name: "Carbonara", price: 17, icon: "🍝" },
+    { id: 4, name: "Chezzy Mac", price: 18, icon: "🧀" },
+    { id: 5, name: "Baked Beans", price: 13, icon: "🥫" }
 ];
 
 // ============= GLOBAL VARIABLES =============
