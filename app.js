@@ -1,10 +1,10 @@
-// ============= PRODUCT DATABASE =============
+// ============= PRODUCT DATABASE (5 MENU ITEMS WITH NEW PRICES) =============
 const products = [
-    { id: 1, name: "Chili Mexican", price: 5.99, icon: "🌶️" },
-    { id: 2, name: "Bolognese", price: 7.99, icon: "🍝" },
-    { id: 3, name: "Carbonara", price: 2.99, icon: "🍝" },
-    { id: 4, name: "Chezzy Mac", price: 1.99, icon: "🧀" },
-    { id: 5, name: "Baked Beans", price: 2.99, icon: "🥫" }
+    { id: 1, name: "Chili Mexican", price: 15, icon: "🌶️" },
+    { id: 2, name: "Bolognese", price: 16, icon: "🍝" },
+    { id: 3, name: "Carbonara", price: 17, icon: "🍝" },
+    { id: 4, name: "Chezzy Mac", price: 18, icon: "🧀" },
+    { id: 5, name: "Baked Beans", price: 13, icon: "🥫" }
 ];
 
 // ============= GLOBAL VARIABLES =============
@@ -13,7 +13,6 @@ let salesHistory = [];
 let currentSale = null;
 let currentPaymentMethod = null;
 let currentCustomerName = null;
-let pendingProduct = null;
 
 // Individual stock limits with availability checkbox
 let stockLimits = {
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDateTime();
     setInterval(updateDateTime, 1000);
     
-    // Close sidebar when clicking outside
     document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('sidebarMenu');
         const menuBtn = document.querySelector('.menu-btn');
@@ -65,7 +63,7 @@ function toggleMenu() {
     if (sidebar) sidebar.classList.toggle('open');
 }
 
-// ============= STOCK LIMITS UI WITH CHECKBOXES AND ADD STOCK BUTTON =============
+// ============= STOCK LIMITS UI WITH CHECKBOX THAT DISABLES ADD STOCK =============
 function renderStockLimitsUI() {
     const container = document.getElementById('stockLimitsContainer');
     if (!container) return;
@@ -86,7 +84,9 @@ function renderStockLimitsUI() {
                     <input type="number" class="stock-item-input" id="stock_limit_${product.id}" 
                            placeholder="Limit" value="${stock.limit}" min="0" step="1" 
                            ${!stock.available ? 'disabled' : ''}>
-                    <button class="add-stock-btn" onclick="showAddStockModal(${product.id})">
+                    <button class="add-stock-btn" id="addStockBtn_${product.id}" 
+                            onclick="showAddStockModal(${product.id})" 
+                            ${!stock.available ? 'disabled' : ''}>
                         ➕ Add Stock
                     </button>
                     <span class="stock-status ${!stock.available ? 'unavailable' : ''}">
@@ -104,11 +104,17 @@ function renderStockLimitsUI() {
 function toggleAvailability(productId) {
     const checkbox = document.getElementById(`available_${productId}`);
     const limitInput = document.getElementById(`stock_limit_${productId}`);
+    const addStockBtn = document.getElementById(`addStockBtn_${productId}`);
     
     stockLimits[productId].available = checkbox.checked;
     
     if (limitInput) {
         limitInput.disabled = !checkbox.checked;
+    }
+    
+    // Disable Add Stock button when unchecked
+    if (addStockBtn) {
+        addStockBtn.disabled = !checkbox.checked;
     }
     
     saveStockLimits();
@@ -135,6 +141,12 @@ function saveAllStockLimits() {
 let currentStockProductId = null;
 
 function showAddStockModal(productId) {
+    // Check if product is available before allowing add stock
+    if (!stockLimits[productId].available) {
+        alert('This item is currently unavailable. Please check the box first to enable stock addition.');
+        return;
+    }
+    
     currentStockProductId = productId;
     const product = products.find(p => p.id === productId);
     const stock = stockLimits[productId];
@@ -160,15 +172,11 @@ function confirmAddStock() {
         return;
     }
     
-    // Add to current limit
     const currentLimit = stockLimits[currentStockProductId].limit;
     const newLimit = currentLimit + amount;
     stockLimits[currentStockProductId].limit = newLimit;
     
-    // Save to storage
     saveStockLimits();
-    
-    // Update UI
     renderStockLimitsUI();
     displayProducts();
     
@@ -257,14 +265,14 @@ function updateSoldCount(productId, quantity) {
 
 // ============= RESET DAY FUNCTION =============
 function resetDay() {
-    if (confirm('⚠️ WARNING: This will reset ALL sold counts for today!\n\nAre you sure?')) {
+    if (confirm('⚠️ WARNING: This will reset ALL sold counts to 0 for today!\n\nAre you sure?')) {
         Object.keys(stockLimits).forEach(id => {
             stockLimits[id].sold = 0;
         });
         saveStockLimits();
         renderStockLimitsUI();
         displayProducts();
-        alert('✅ Day has been reset!');
+        alert('✅ Day has been reset! All sold counts are now 0.');
     }
 }
 
@@ -690,7 +698,7 @@ function showSalesHistory() {
                 Items: ${sale.itemCount} items<br>
                 Total: RM${sale.total.toFixed(2)}<br>
                 Payment: ${sale.paymentMethod}<br>
-                <button onclick="reprintSale(${sale.id})" style="margin-top:10px; padding:5px 10px; background:#DAA520; color:white; border:none; border-radius:5px; cursor:pointer;">Reprint Receipt</button>
+                <button onclick="reprintSale(${sale.id})" style="margin-top:10px; padding:8px 16px; background:#DAA520; color:white; border:none; border-radius:12px; cursor:pointer; font-family:Poppins; font-weight:500;">Reprint Receipt</button>
             </div>
         `).join('');
     }
